@@ -8,8 +8,8 @@ Danke an alle [Beitragenden](https://github.com/NYTimes/objective-c-style-guide/
 
 Hier sind einige Dokumente von Apple, durch die die Anleitung geprägt wurde. Wenn hier etwas fehlen sollte, wird es wahrscheinlich in einer der folgenden Quellen detailliert betrachtet:
 
-* [The Objective-C Programming Language](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjectiveC/Introduction/introObjectiveC.html)
-* [Cocoa Fundamentals Guide](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/Introduction/Introduction.html)
+* [The Objective-C Programming Language](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html)
+* [Cocoa Fundamentals Guide](https://developer.apple.com/legacy/library/documentation/Cocoa/Conceptual/CocoaFundamentals/Introduction/Introduction.html)
 * [Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html)
 * [iOS App Programming Guide](http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/Introduction/Introduction.html)
 
@@ -29,31 +29,33 @@ Hier sind einige Dokumente von Apple, durch die die Anleitung geprägt wurde. We
 * [CGRect Funktionen](#cgrect-functions)
 * [Konstanten](#constants)
 * [Enumarationen](#enumerated-types)
+* [Bitfelder](#bitmasks)
 * [Private Properties](#private-properties)
 * [Bezeichnung von Bildern](#image-naming)
 * [Wahrheitswerte](#booleans)
 * [Singletons (Entwurfsmuster)](#singletons)
+* [Importierung](#imports)
 * [Xcode Projekt](#xcode-project)
 
 ## Punktnotation
 
-Die Punktnotation sollte **immer** verwendet werden, um auf Properties zuzugreifen oder sie zu verändern. Die Notation mit eckigen Klammern wird in allen anderen Fällen bevorzugt. 
+Die Punktnotation sollte **immer** verwendet werden, um auf Properties zuzugreifen oder sie zu verändern. Die Notation mit eckigen Klammern wird in allen anderen Fällen bevorzugt.
 
 **Beispiel:**
 ```objc
-view.backgroundColor = [UIColor orangeColor];
-[UIApplication sharedApplication].delegate;
+view.backgroundColor = UIColor.orangeColor;
+UIApplication.sharedApplication.delegate;
 ```
 **Nicht:**
 ```objc
 [view setBackgroundColor:[UIColor orangeColor]];
-UIApplication.sharedApplication.delegate;
+[UIApplication sharedApplication].delegate;
 ```
 
 ## Abstände
 
 * Einrückungen benutzen 4 Leerzeichen. Rücke niemals mit Tabs ein. Versichere dich, die entsprechende Einstellung in Xcode vorzunehmen.
-* Bei Methoden und in anderen Fällen (`if`/`else`/`switch`/`while` etc.), wird die öffnende Klammer immer in die gleiche Zeile entsprechend der tatsächlichen Anweisung - die schließende Klammer jedoch in eine neue Zeile, gesetzt. 
+* Bei Methoden und in anderen Fällen (`if`/`else`/`switch`/`while` etc.), wird die öffnende Klammer immer in die gleiche Zeile entsprechend der tatsächlichen Anweisung - die schließende Klammer jedoch in eine neue Zeile, gesetzt.
 
 **Beispiel:**
 ```objc
@@ -66,12 +68,11 @@ else {
 ```
 
 * Es soll genau eine leere Zeile zwischen den Methoden eingefügt werden, um Übersicht und Organisation zu fördern. Leerzeichen innerhalb von Methoden, sollte funktional unterteilt  sein, wobei in vielen Fällen neue Methoden verwendet werden sollten.
-
 * `@synthesize` und `@dynamic` sollten in der Implementation jeweils in neuen Zeilen deklariert werden.
 
 ## Bedingungen
 
-Der Rumpf einer Bedingung sollte immer Klammern verwenden, auch wenn es ohne Klammern stehen könnte (es ist eh nur eine Zeile), damit [Fehler](https://github.com/NYTimes/objective-c-style-guide/issues/26#issuecomment-22074256) vermieden werden.
+Der Rumpf einer Bedingung sollte immer Klammern verwenden, auch wenn es ohne Klammern stehen könnte (es ist nur eine Zeile), damit [Fehler](https://github.com/NYTimes/objective-c-style-guide/issues/26#issuecomment-22074256) vermieden werden.
 
 Diese Fehler entstehen beim Einfügen einer zweiten Zeile, von der man erwartet, dass sie Teil der  if-Anweisung wird.
 Ein weiterer, [sogar viel gefährlicherer Fehler](http://programmers.stackexchange.com/a/16530) könnte passieren, wenn die Zeile "innerhalb" der if-Anweisung auskommentiert wird und die nächste Zeile unwillentlich Teil dieser if-Anweisung wird. Davon abgesehen, ist diese Form viel konsistenter, verglichen mit den anderen Bedingungsanweisungen und deshalb auch einfacher zu lesen.
@@ -97,14 +98,14 @@ if (!error) return success;
 
 ### Ternärer (dreifacher) Operator
 
-Der ternäre Operator, ? , sollte nur verwendet werden, wenn es der Klarheit dient und den Code sauber aussehen lässt. Eine einzelne Bedingung ist normalerweise alles, was ausgewertet werden sollte. Mehrere Bedingungen sollten besser in einer if-Anweisung ausgewertet werden oder in Instanzvariablen überarbeitet werden.
+Der ternäre Operator, ? , sollte nur verwendet werden, wenn es der Klarheit dient und den Code sauber aussehen lässt. Eine einzelne Bedingung ist normalerweise alles, was ausgewertet werden sollte. Mehrere Bedingungen sollten besser in einer if-Anweisung ausgewertet werden oder in Instanzvariablen übertragen werden.
 
-**For example:**
+**Beispiel:**
 ```objc
 result = a > b ? x : y;
 ```
 
-**Not:**
+**Nicht:**
 ```objc
 result = a > b ? x = c > d ? c : d : y;
 ```
@@ -143,16 +144,16 @@ In Methoden Signaturen sollte Abstand hinter dem +/- Zeichen sein. Es sollte ein
 
 ## Variablen
 
-Variablen sollten so deskriptiv wie möglich sein. Variablen mit einzelnen Buchstaben sollten vermieden werden, wenn sie nicht in `for()` Schleifen verwendet werden.
+Variablen sollten so deskriptiv wie möglich sein. Variablen mit einzelnen Buchstaben sollten vermieden werden, wenn sie nicht in `for` Schleifen verwendet werden.
 
-Asterisks, die auf Zeiger hinweisen, gehören zur Variable - z.B. 	`NSString *text` nicht `NSString* text	` oder `NSString * text`. Ausnahmen bilden die Konstanten.
+Asterisks, die auf Zeiger hinweisen, gehören zur Variable - z.B. 	`NSString *text` nicht `NSString* text	` oder `NSString * text`. Ausnahmen bilden die Konstanten (`NSString * const NYTConstantString`).
 
 Property Eigenschaften sollten, wenn immer es möglich ist, an Stelle von einfachen Instanzvariablen verwendet werden. Direkter Zugriff auf Instanzvariablen sollte vermieden werden, Ausnahmen bilden Methoden zur Initialisierung (`init	`, `initWithCoder:`, etc...), `dealloc` Methoden und innerhalb von eigenen Zugriffsmethoden (Setter/Getter). Weitere Informationen zur Verwendung von Zugriffsmethoden und Methoden zur Initialisierung und dealloc, finden sich [hier](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW6)
 
 **Beispiel:**
 
 ```objc
-@interface NYTSection: NSObject
+@interface NYTSection : NSObject
 
 @property (nonatomic) NSString *headline;
 
@@ -166,6 +167,10 @@ Property Eigenschaften sollten, wenn immer es möglich ist, an Stelle von einfac
     NSString *headline;
 }
 ```
+
+#### Variablen Qualifikationen
+
+Wenn es um die Qualifikationen von Variablen, [die mit ARC eingeführt wurden, geht]((https://developer.apple.com/library/ios/releasenotes/objectivec/rn-transitioningtoarc/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW4), sollte die entsprechende Qualifikation zwischen dem Asterisk und dem Variablennamen plaziert werden. Z.B.: `NSString *__weak text`.
 
 ## Benennung
 
@@ -209,7 +214,7 @@ Instanzvariablen sollten "Camel-Case" sein, wobei das erste Wort klein geschrieb
 @synthesize descriptiveVariableName = _descriptiveVariableName;
 ```
 
-**Not:**
+**Nicht:**
 
 ```objc
 id varnm;
@@ -217,7 +222,7 @@ id varnm;
 
 ## Kommentare
 
-Wenn sie gebraucht werden, sollten Kommentare verwendet werden um zu erklären, **warum** ein bestimmtes Codefragment etwas tut.   Alle Kommentare die verwendet werden, müssen ständig aktuell sein oder andernfalls gelöscht werden. 
+Wenn sie gebraucht werden, sollten Kommentare verwendet werden um zu erklären, **warum** ein bestimmtes Codefragment etwas tut. Alle Kommentare die verwendet werden, müssen ständig aktuell sein oder andernfalls gelöscht werden.
 
 Blockkommentare sollten generell vermieden werden, da Code (abgesehen von ein paar erklärenden Zeilen zwischendurch) so selbsterklärend wie möglich sein sollte. Das bezieht sich nicht auf Kommentare, die angewendet werden, um eine Dokumentation zu erstellen.
 
@@ -229,11 +234,10 @@ Blockkommentare sollten generell vermieden werden, da Code (abgesehen von ein pa
 
 ```objc
 - (instancetype)init {
-    self = [super init]; // oder Aufruf des designated initalizer
+    self = [super init]; // oder Aufruf des designated initializer
     if (self) {
         // Custom initialization
     }
-
     return self;
 }
 ```
@@ -246,7 +250,7 @@ Blockkommentare sollten generell vermieden werden, da Code (abgesehen von ein pa
 
 ```objc
 NSArray *names = @[@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul"];
-NSDictionary *productManagers = @{@"iPhone" : @"Kate", @"iPad" : @"Kamal", @"Mobile Web" : @"Bill"};
+NSDictionary *productManagers = @{@"iPhone": @"Kate", @"iPad": @"Kamal", @"Mobile Web": @"Bill"};
 NSNumber *shouldUseLiterals = @YES;
 NSNumber *buildingZIPCode = @10018;
 ```
@@ -262,7 +266,7 @@ NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
 
 ## CGRect Funktionen
 
-Beim Zugriff auf `x`, `y`, `width` oder `height` eines CGRect sollten statt des direkt Zugriffs auf die `struct` Werte, immer die [`CGGeometry` Funktionen](http://developer.apple.com/library/ios/#documentation/graphicsimaging/reference/CGGeometry/Reference/reference.html) verwendet werden.
+Beim Zugriff auf `x`, `y`, `width` oder `height` eines CGRect sollten statt des direkt Zugriffs auf die `struct` Werte, immer die [`CGGeometry` Funktionen](https://developer.apple.com/documentation/coregraphics/cggeometry) verwendet werden.
 
 > All functions described in this reference that take CGRect data structures as inputs implicitly standardize those rectangles before calculating their results. For this reason, your applications should avoid directly reading and writing the data stored in the CGRect data structure. Instead, use the functions described here to manipulate rectangles and to retrieve their characteristics.
 
@@ -290,7 +294,7 @@ CGFloat height = frame.size.height;
 
 ## Konstanten
 
-Konstanten werden gegenüber in-line Zeichenketten oder Zahlen bevorzugt, da sie eine einfache Wiederverwendung von gemeinsam verwendeten Variablen erlauben. Zudem können sie einfach ersetzt werden, ohne sie zuvor mit Finde und Ersetze ausfindig gemacht zu haben. Konstanten sollten als `static` Konstanten ud nicht mit #define deklariert werden, so fern sie nicht explizit in Makros verwendet werden.
+Konstanten werden gegenüber in-line Zeichenketten oder Zahlen bevorzugt, da sie eine einfache Wiederverwendung von gemeinsam verwendeten Variablen erlauben. Zudem können sie einfach ersetzt werden, ohne sie zuvor mit "Finde und Ersetze" ausfindig gemacht zu haben. Konstanten sollten als `static` Konstanten und nicht mit #define deklariert werden, so fern sie nicht explizit in Makros verwendet werden.
 
 **Beispiel:**
 
@@ -321,9 +325,25 @@ typedef NS_ENUM(NSInteger, NYTAdRequestState) {
 };
 ```
 
+## Bitfelder ##
+
+Wenn mit Bitfeldern gearbeitet wird, sollte das `NS_OPTION` Makro verwendet werden.
+
+**Beispiel:**
+
+```objc
+typedef NS_OPTIONS(NSUInteger, NYTAdCategory) {
+  NYTAdCategoryAutos      = 1 << 0,
+  NYTAdCategoryJobs       = 1 << 1,
+  NYTAdCategoryRealState  = 1 << 2,
+  NYTAdCategoryTechnology = 1 << 3
+};
+```
+
+
 ## Private Eigenschaften
 
-Private Eigenschaften sollten in den Klassenerweiterungen der Implementierung einer Klasse deklariert werden (Anonyme Kategorien). 
+Private Eigenschaften sollten in den Klassenerweiterungen der Implementierung einer Klasse deklariert werden (Anonyme Kategorien).
 
 **Beispiel:**
 
@@ -361,7 +381,7 @@ if (!someObject) {
 }
 ```
 
-**Not:**
+**Nicht:**
 
 ```objc
 if (someObject == nil) {
@@ -377,7 +397,7 @@ if (isAwesome)
 if (![someObject boolValue])
 ```
 
-**Not:**
+**Nicht:**
 
 ```objc
 if (isAwesome == YES) // Niemals so.
@@ -412,6 +432,24 @@ Singletons sollten ein thread-sicheres Muster bei der Erstellung ihrer Instanzen
 
 Dies wird [einigen möglichen Abstürzen] vorbeugen (http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html).
 
+## Importierungen
+
+Wenn es mehr als eine Importierungsanweisung gibt, sollten diese [zusammen gruppiert werden](http://ashfurrow.com/blog/structuring-modern-objective-c). Das Kommentieren der Gruppen ist optional.
+
+Notiz: Für Module soll die [@import](http://clang.llvm.org/docs/Modules.html#using-modules) syntax verwendet werden.
+
+```objc
+// Frameworks
+@import QuartzCore;
+
+// Models
+#import "NYTUser.h"
+
+// Views
+#import "NYTButton.h"
+#import "NYTUserView.h"
+```
+
 ## Xcode Projekt
 
 Die real vorhanden Dateien sollten mit den Dateien in Xcode synchronisiert werden, um ein Durcheinander zu vermeiden. Alle Gruppen, die in Xcode erstellt wurden, sollten sich im Dateisystem widerspiegeln. Code sollte nicht nur nach seinem Typ, sondern auch nach den entsprechenden Features gruppiert werden, um eine bessere Übersicht zu gewährleisten.
@@ -422,10 +460,11 @@ Wenn möglich, sollte die Option "Treat Warnings as Errors" in den Target Build 
 
 Wenn unsere Version nicht Euren Geschmack trifft, schaut euch ein paar andere Styleguides an:
 
-* [Google](http://google-styleguide.googlecode.com/svn/trunk/objcguide.xml)
+* [Google](https://google.github.io/styleguide/objcguide.xml)
 * [GitHub](https://github.com/github/objective-c-conventions)
 * [Adium](https://trac.adium.im/wiki/CodingStyle)
 * [Sam Soffes](https://gist.github.com/soffes/812796)
 * [CocoaDevCentral](http://cocoadevcentral.com/articles/000082.php)
 * [Luke Redpath](http://lukeredpath.co.uk/blog/my-objective-c-style-guide.html)
 * [Marcus Zarra](http://www.cimgf.com/zds-code-style-guide/)
+* [Wikimedia](https://www.mediawiki.org/wiki/Wikimedia_Apps/Team/iOS/ObjectiveCStyleGuide)

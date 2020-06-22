@@ -1,19 +1,19 @@
-# 纽约时报 移动团队 Objective-C 风格指南
+# 纽约时报 移动团队 Objective-C 规范指南
 
-这份风格指南概括了纽约时报 iOS 团队的代码约定。
+这份规范指南概括了纽约时报 iOS 团队的代码约定。
 
-## 背景介绍
+## 介绍
 
-这里是苹果提供的一些风格指南，如果有什么东西没在这里提到，那么它可能在其中一个有详细的介绍：
+关于这个编程语言的所有规范，如果这里没有写到，那就在苹果的文档里： 
 
 * [Objective-C 编程语言][Introduction_1]
 * [Cocoa 基本原理指南][Introduction_2]
 * [Cocoa 编码指南][Introduction_3]
 * [iOS 应用编程指南][Introduction_4]
 
-[Introduction_1]:http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjectiveC/Introduction/introObjectiveC.html
+[Introduction_1]:https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html
 
-[Introduction_2]:https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/Introduction/Introduction.html
+[Introduction_2]:https://developer.apple.com/legacy/library/documentation/Cocoa/Conceptual/CocoaFundamentals/Introduction/Introduction.html
 
 [Introduction_3]:https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html
 
@@ -25,7 +25,7 @@
 * [点语法](#点语法)
 * [间距](#间距)
 * [条件判断](#条件判断)
-	* [三目运算符](#三目运算符)
+* [三目运算符](#三目运算符)
 * [错误处理](#错误处理)
 * [方法](#方法)
 * [变量](#变量)
@@ -41,6 +41,7 @@
 * [图片命名](#图片命名)
 * [布尔](#布尔)
 * [单例](#单例)
+* [导入](#导入)
 * [Xcode 工程](#Xcode-工程)
 
 ## 点语法
@@ -49,14 +50,14 @@
 
 **推荐：**
 ```objc
-view.backgroundColor = [UIColor orangeColor];
-[UIApplication sharedApplication].delegate;
+view.backgroundColor = UIColor.orangeColor;
+UIApplication.sharedApplication.delegate;
 ```
 
 **反对：**
 ```objc
 [view setBackgroundColor:[UIColor orangeColor]];
-UIApplication.sharedApplication.delegate;
+[UIApplication sharedApplication].delegate;
 ```
 
 ## 间距
@@ -67,10 +68,10 @@ UIApplication.sharedApplication.delegate;
 **推荐：**
 ```objc
 if (user.isHappy) {
-// Do something
+    // Do something
 }
 else {
-// Do something else
+    // Do something else
 }
 ```
 * 方法之间应该正好空一行，这有助于视觉清晰度和代码组织性。在方法中的功能块之间应该使用空白分开，但往往可能应该创建一个新的方法。
@@ -159,7 +160,7 @@ if (error) {
 **推荐：**
 
 ```objc
-@interface NYTSection: NSObject
+@interface NYTSection : NSObject
 
 @property (nonatomic) NSString *headline;
 
@@ -254,7 +255,6 @@ id varnm;
     if (self) {
         // Custom initialization
     }
-
     return self;
 }
 ```
@@ -267,7 +267,7 @@ id varnm;
 
 ```objc
 NSArray *names = @[@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul"];
-NSDictionary *productManagers = @{@"iPhone" : @"Kate", @"iPad" : @"Kamal", @"Mobile Web" : @"Bill"};
+NSDictionary *productManagers = @{@"iPhone": @"Kate", @"iPad": @"Kamal", @"Mobile Web": @"Bill"};
 NSNumber *shouldUseLiterals = @YES;
 NSNumber *buildingZIPCode = @10018;
 ```
@@ -309,7 +309,7 @@ CGFloat width = frame.size.width;
 CGFloat height = frame.size.height;
 ```
 
-[CGRect-Functions_1]:http://developer.apple.com/library/ios/#documentation/graphicsimaging/reference/CGGeometry/Reference/reference.html
+[CGRect-Functions_1]:https://developer.apple.com/documentation/coregraphics/cggeometry
 
 ## 常量
 
@@ -352,17 +352,17 @@ typedef NS_ENUM(NSInteger, NYTAdRequestState) {
 
 ```objc
 typedef NS_OPTIONS(NSUInteger, NYTAdCategory) {
-NYTAdCategoryAutos      = 1 << 0,
-NYTAdCategoryJobs       = 1 << 1,
-NYTAdCategoryRealState  = 1 << 2,
-NYTAdCategoryTechnology = 1 << 3
+    NYTAdCategoryAutos      = 1 << 0,
+    NYTAdCategoryJobs       = 1 << 1,
+    NYTAdCategoryRealState  = 1 << 2,
+    NYTAdCategoryTechnology = 1 << 3
 };
 ```
 
 
 ## 私有属性
 
-私有属性应该声明在类实现文件的延展（匿名的类目）中。有名字的类目（例如 `NYTPrivate` 或 `private`）永远都不应该使用，除非要扩展其他类。
+私有属性应该声明在类实现文件的延展（匿名的类目）中。
 
 **推荐：**
 
@@ -443,20 +443,40 @@ if (isAwesome == YES) // 永远别这么做
 
 ```objc
 + (instancetype)sharedInstance {
-   static id sharedInstance = nil;
+    static id sharedInstance = nil;
 
-   static dispatch_once_t onceToken;
-   dispatch_once(&onceToken, ^{
-      sharedInstance = [[self alloc] init];
-   });
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
 
-   return sharedInstance;
+    return sharedInstance;
 }
 ```
 这将会预防[有时可能产生的许多崩溃][Singletons_1]。
 
 [Singletons_1]:http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html
 
+## 导入   
+
+如果有一个以上的 import 语句，就对这些语句进行[分组][Import_1]。每个分组的注释是可选的。   
+注：对于模块使用 [@import][Import_2] 语法。   
+
+```objc   
+// Frameworks
+@import QuartzCore;
+
+// Models
+#import "NYTUser.h"
+
+// Views
+#import "NYTButton.h"
+#import "NYTUserView.h"
+```   
+
+
+[Import_1]: http://ashfurrow.com/blog/structuring-modern-objective-c
+[Import_2]: http://clang.llvm.org/docs/Modules.html#using-modules
 
 ## Xcode 工程
 
@@ -475,7 +495,7 @@ if (isAwesome == YES) // 永远别这么做
 
 如果感觉我们的不太符合你的口味，可以看看下面的风格指南：
 
-* [Google](http://google-styleguide.googlecode.com/svn/trunk/objcguide.xml)
+* [Google](https://google.github.io/styleguide/objcguide.xml)
 * [GitHub](https://github.com/github/objective-c-conventions)
 * [Adium](https://trac.adium.im/wiki/CodingStyle)
 * [Sam Soffes](https://gist.github.com/soffes/812796)
